@@ -3,7 +3,7 @@
 #' Print the dates in a `shoreline_date` object. Each date is printed
 #'  with site name, elevation and highest density region. If the isobase
 #'  direction is different or more are provided than the default, the
-#'  directions and dates associated with these are also printed.
+#'  directions and dates associated with these are printed separately.
 #'
 #' @param x Object of class `shoreline_date`.
 #' @param ... Additional arguments.
@@ -14,16 +14,16 @@
 #' @export
 #'
 #' @examples
-#'
 #' target_point <- sf::st_sfc(sf::st_point(c(538310, 6544255)), crs = 32632)
 #'
-#' # Reduce date resolution with cal_reso and elevation_reso for speed.
+#' # Reduce date resolution with cal_reso and elevation_reso for speed
 #' target_date <- shoreline_date(site = target_point,
 #'                               elevation = 70,
 #'                               elev_reso = 1,
 #'                               cal_reso = 400)
-#' target_date
 #'
+#' # Print to console
+#' target_date
 print.shoreline_date <- function(x, ...){
 
   for (i in 1:length(x)) {

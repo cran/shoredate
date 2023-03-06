@@ -6,7 +6,7 @@
 #'
 #' @param sites Vector giving one or more site names, or, if displacement curves
 #'   are to be interpolated, objects of class `sf` representing the sites to be
-#'   dated. In the case of a spatial geometry, the first column is taken as
+#'   dated. In the case of a spatial geometry, the first column is taken as the
 #'   site name.
 #' @param elevation Vector of numeric elevation values for each site or a
 #'  an elevation raster of class `SpatRaster` from the package
@@ -19,24 +19,27 @@
 #' @param isobase_direction A vector of numeric values defining the direction(s)
 #'   of the isobases. Defaults to 327.
 #' @param sum_isobase_directions Logical value indicating that if multiple
-#'  isobase directions are specified in `isobase_direction` the results should be
-#'  summed for each site using `sum_shoredates`. Defaults to FALSE.
+#'  isobase directions are specified in `isobase_direction` the results should
+#'  be summed for each site using `sum_shoredates`. Defaults to FALSE.
 #' @param model_parameters Vector of two numeric values specifying the shape and
-#'   scale of the gamma distribution. Defaults to c(0.286, 0.048), denoting the
-#'   shape and scale, respectively.
+#'   scale of the gamma distribution. Defaults to c(0.286, 20.833), denoting
+#'   the shape and scale, respectively.
 #' @param elev_fun Statistic to define site elevation if this is to be derived
 #'  from an elevation raster. Uses `terra::extract()`. Defaults to mean.
-#' @param interpolated_curve List holding shoreline displacement curve.
-#'   [interpolate_curve()] will be run if this is not provided.
+#' @param interpolated_curve List holding precomputed shoreline displacement
+#'  curve. This has to have the same resolution on the calendar scale as the one
+#'  specified with `cal_reso`. [interpolate_curve()] will be run if this is not
+#'  provided.
 #' @param hdr_prob Numeric value specifying the coverage of the highest density
 #'  region. Defaults to 0.95.
 #' @param normalise Logical value specifying whether the shoreline date should
-#'   be normalised to sum to unity. Defaults to TRUE.
+#'  be normalised to sum to unity. Defaults to TRUE.
 #' @param sparse Logical value specifying if only site name and shoreline date
-#'   should be returned. Defaults to FALSE. Note that sparse dates are only
-#'   compatible with [sum_shoredates()].
+#'  should be returned. Defaults to FALSE. Note that of the functions for
+#'  further treatment, sparse dates are only compatible with
+#'  [sum_shoredates()].
 #' @param verbose Logical value indicating whether progress should be printed to
-#'   console. Defaults to FALSE.
+#'  console. Defaults to FALSE.
 #'
 #' @return A nested list of class `shoreline_date` holding the shoreline date
 #'  results and associated metadata for each dated site for each isobase
@@ -76,8 +79,7 @@
 #' target_point <- sf::st_sfc(sf::st_point(c(538310, 6544255)), crs = 32632)
 #'
 #' # Date target point, manually specifying the elevation instead of providing
-#' # an elevation raster and setting the resolution on the calendar scale to
-#' # 200 years and elevation scale to 1 for speed.
+#' # an elevation raster. Reducing elev_reso and cal_reso for speed.
 #' shoreline_date(sites = target_point,
 #'                elevation = 80,
 #'                elev_reso = 1,
@@ -88,7 +90,7 @@ shoreline_date <- function(sites,
                            cal_reso = 10,
                            isobase_direction = 327,
                            sum_isobase_directions = FALSE,
-                           model_parameters = c(0.286, 0.048),
+                           model_parameters = c(0.286, 20.833),
                            elev_fun = "mean",
                            interpolated_curve = NA,
                            hdr_prob = 0.95,
@@ -96,10 +98,14 @@ shoreline_date <- function(sites,
                            sparse = FALSE,
                            verbose = FALSE){
 
-  # Make the geometries be represented as a sf data frame
-  # (and not for example sfc)
-  if (!inherits(sites, c("sf", "data.frame"))) {
-    sites <- sf::st_as_sf(sites, crs = sf::st_crs(sites))
+  # Make sfc geometries be represented as a sf data frame
+  if(!inherits(sites, c("sf", "data.frame"))){
+    if (is.na(interpolated_curve) & inherits(sites, "sfc")) {
+      sites <- sf::st_as_sf(sites, crs = sf::st_crs(sites))
+    # Make vector of site names a data frame for nrow() below
+    } else {
+      sites <- as.data.frame(sites)
+    }
   }
 
   if (!(is.numeric(elevation) |
@@ -182,16 +188,19 @@ shoreline_date <- function(sites,
         probability = 0)
 
       # Assign site name (to be returned/used in errors below)
-      if (ncol(sites) == 1) {
+      if (inherits(sites, c("sf", "data.frame")) & ncol(sites) == 1) {
         site_name <- as.character(i)
-      } else {
+      } else if (inherits(sites, c("sf", "data.frame"))){
         site_name <- as.character(st_drop_geometry(sites)[i,1])
+      } else {
+        site_name <- as.character(sites[i])
       }
 
 
       # Find oldest possible date
       mdate <- temp_curve[which(temp_curve[,"lowerelev"] ==
-                                  max(temp_curve[,"lowerelev"], na.rm = TRUE)), "bce"]
+                                  max(temp_curve[,"lowerelev"],
+                                      na.rm = TRUE)), "bce"]
 
       # Check that site date is not above this limit
       msdate <- stats::approx(temp_curve[,"lowerelev"],
@@ -202,8 +211,8 @@ shoreline_date <- function(sites,
       # the default.
       if (is.na(msdate) & unique(temp_curve$direction) == 327) {
         warning(paste0("The elevation of site ", site_name,
-                       " implies an earliest possible date older than ", mdate,
-                       " BCE and is out of bounds. The date is returned as NA."))
+                      " implies an earliest possible date older than ", mdate,
+                      " BCE and is out of bounds. The date is returned as NA."))
         dategrid$probability <- NA
         gammadat <- NA
       } else if (is.na(msdate)) {
@@ -220,7 +229,7 @@ shoreline_date <- function(sites,
         gammadat <- data.frame(
           offset = inc,
           px = stats::pgamma(inc, shape = model_parameters[1],
-                             rate =  model_parameters[2]))
+                             scale =  model_parameters[2]))
         gammadat$probs <- c(diff(gammadat$px), 0)
         gammdat <- gammadat[gammadat$px < 0.99999,]
 
@@ -354,7 +363,7 @@ shoreline_date <- function(sites,
         hdr_prob = hdr_prob,
         dispcurve = NA,
         dispcurve_direction = unlist(lapply(date_isobases,
-                                            function(x) unique(x["dispcurve_direction"]))),
+                             function(x) unique(x["dispcurve_direction"]))),
         model_parameters = model_parameters,
         gammadat = gammadat,
         cal_reso = cal_reso

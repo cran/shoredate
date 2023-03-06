@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![CRAN
+Version](http://www.r-pkg.org/badges/version/shoredate)](https://cran.r-project.org/package=shoredate)
 [![License: GPL
 v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![R-CMD-check](https://github.com/isakro/shoredate/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/isakro/shoredate/actions/workflows/R-CMD-check.yaml)
@@ -19,23 +21,30 @@ Shoreline dating is based on the premise that coastal Stone Age sites in
 the region were located on or close to the shoreline when they were in
 use, and is implemented here based on an empirically derived estimate of
 the likely elevation of the sites above sea-level when they were
-occupied (Roalkvam 2023). However, do note that as the Roalkvam (2023)
-study provides a first formalisation of the method, it is hefted with
-unexplored uncertainties, and as the method is dependent on regularities
-in human behaviour, the dates achieved with the package should be
-treated with care.
+occupied (Roalkvam 2023). However, do note that as the method is
+dependent on regularities in human behaviour and as the Roalkvam (2023)
+study provides an initial formalisation of the method, it is hefted with
+unexplored uncertainties. Consequently, the dates achieved with the
+package should be treated with care.
 
 ## Installation and loading
 
-You can install the development version of *shoredate* from
-[GitHub](https://github.com/isakro/shoredate) with:
+*shoredate* can be installed from
+[CRAN](https://cran.r-project.org/package=shoredate) with:
+
+``` r
+install.packages("shoredate")
+```
+
+The latest development version can be installed from
+[GitHub](https://github.com/isakro/shoredate) using `devtools`:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("isakro/shoredate")
 ```
 
-The package can then be loaded:
+When it has been installed the package can be loaded:
 
 ``` r
 library(shoredate)
@@ -67,12 +76,12 @@ UTM zone 32N (EPSG:32632).
 As human occupation in the region only occurred some time after the
 retreat of the Fennoscandian Ice Sheet, the currently oldest known sites
 in Norway are from around 9300 BCE (e.g. Glørstad 2016). The oldest
-possible age to achieve with *shoredate* is 9460 BCE, although no sites
+possible age to achieve with *shoredate* is 9469 BCE, although no sites
 are yet known to be that old. A warning is given if a site location is
 outside the spatial extent outlined above, as this involves a more
 uncertain extrapolation of the development of shoreline displacement.
 However, the dating procedure is still performed. Conversely, if a site
-has an elevation that implies a date older than 9460 BCE the date is
+has an elevation that implies a date older than 9469 BCE the date is
 returned as NA and a warning is given.
 
 In Roalkvam (2023) it was found that sites tend to be located on or
@@ -141,15 +150,15 @@ shoredate_plot(target_date)
 The blue gamma distribution on the y-axis represents the likely
 elevation of the site above sea-level when it was in use, which is
 described by an empirically derived gamma distribution with the
-parameters $\alpha$ (shape) = 0.286 and $\sigma$ (scale) = 0.048 (see
-Roalkvam 2023 for more details). This starts from the elevation of the
-site. The red envelope is the shoreline displacement curve as
-interpolated to the site location. The probability from the gamma
-distribution is transferred to the calendar scale using the displacement
-curve. This gives the resulting shoreline date in grey, which is
-underlined by the 95% highest density region (HDR) in black. By default,
-the shoreline date is normalised to sum to unity. The default resolution
-on the calendar scale is 10 years.
+parameters $\alpha$ (shape) = 0.286 and $\sigma$ (scale) = 20.833. This
+starts from the elevation of the site. The red envelope is the shoreline
+displacement curve as interpolated to the site location. The probability
+from the gamma distribution is transferred to the calendar scale using
+the displacement curve. This gives the resulting shoreline date in grey,
+which is underlined by the 95% highest density region (HDR) in black
+(see Roalkvam 2023 for more details). By default, the shoreline date is
+normalised to sum to unity. The default resolution on the calendar scale
+is 10 years.
 
 Calling the date object, which has the custom class `shoreline_date`,
 prints the name of the site, its elevation and the HDR:
@@ -191,8 +200,10 @@ target_points$elevation <- c(70, 46, 62, 30)
 # Perform shoreline dating
 target_dates <- shoreline_date(sites = target_points, 
                                elevation = target_points$elevation)
+```
 
-# Print to console
+``` r
+# Print the dates to console
 target_dates
 #> ===============
 #> Site:  Example 1

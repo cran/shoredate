@@ -11,11 +11,11 @@ check_target_location(target)
 \item{target}{A spatial object of class \code{sf}, representing a site location.}
 }
 \value{
-An error if the site does not intersect the study area or is lacking
-or is set to the incorrect coordinate reference system.
+A warning if the target does not intersect the study area. An error
+if it is lacking or is set to the incorrect coordinate reference system.
 }
 \description{
-Checks if a target sites is set to the correct coordinate reference system
+Checks if a target site is set to the correct coordinate reference system
 WGS84 UTM32N (EPSG: 32632). Throws an error if this is not the case. Checks
 if the location intersects the study area for which the method was derived
 (see Roalkvam 2022). Returns a warning if this is not the case.

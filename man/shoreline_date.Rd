@@ -11,7 +11,7 @@ shoreline_date(
   cal_reso = 10,
   isobase_direction = 327,
   sum_isobase_directions = FALSE,
-  model_parameters = c(0.286, 0.048),
+  model_parameters = c(0.286, 20.833),
   elev_fun = "mean",
   interpolated_curve = NA,
   hdr_prob = 0.95,
@@ -23,7 +23,7 @@ shoreline_date(
 \arguments{
 \item{sites}{Vector giving one or more site names, or, if displacement curves
 are to be interpolated, objects of class \code{sf} representing the sites to be
-dated. In the case of a spatial geometry, the first column is taken as
+dated. In the case of a spatial geometry, the first column is taken as the
 site name.}
 
 \item{elevation}{Vector of numeric elevation values for each site or a
@@ -41,18 +41,20 @@ calendar scale. Defaults to 10.}
 of the isobases. Defaults to 327.}
 
 \item{sum_isobase_directions}{Logical value indicating that if multiple
-isobase directions are specified in \code{isobase_direction} the results should be
-summed for each site using \code{sum_shoredates}. Defaults to FALSE.}
+isobase directions are specified in \code{isobase_direction} the results should
+be summed for each site using \code{sum_shoredates}. Defaults to FALSE.}
 
 \item{model_parameters}{Vector of two numeric values specifying the shape and
-scale of the gamma distribution. Defaults to c(0.286, 0.048), denoting the
-shape and scale, respectively.}
+scale of the gamma distribution. Defaults to c(0.286, 20.833), denoting
+the shape and scale, respectively.}
 
 \item{elev_fun}{Statistic to define site elevation if this is to be derived
 from an elevation raster. Uses \code{terra::extract()}. Defaults to mean.}
 
-\item{interpolated_curve}{List holding shoreline displacement curve.
-\code{\link[=interpolate_curve]{interpolate_curve()}} will be run if this is not provided.}
+\item{interpolated_curve}{List holding precomputed shoreline displacement
+curve. This has to have the same resolution on the calendar scale as the one
+specified with \code{cal_reso}. \code{\link[=interpolate_curve]{interpolate_curve()}} will be run if this is not
+provided.}
 
 \item{hdr_prob}{Numeric value specifying the coverage of the highest density
 region. Defaults to 0.95.}
@@ -61,8 +63,9 @@ region. Defaults to 0.95.}
 be normalised to sum to unity. Defaults to TRUE.}
 
 \item{sparse}{Logical value specifying if only site name and shoreline date
-should be returned. Defaults to FALSE. Note that sparse dates are only
-compatible with \code{\link[=sum_shoredates]{sum_shoredates()}}.}
+should be returned. Defaults to FALSE. Note that of the functions for
+further treatment, sparse dates are only compatible with
+\code{\link[=sum_shoredates]{sum_shoredates()}}.}
 
 \item{verbose}{Logical value indicating whether progress should be printed to
 console. Defaults to FALSE.}
@@ -102,14 +105,12 @@ elevation, their likely elevation above sea-level when in use and the
 trajectory of past shoreline displacement on the Norwegian Skagerrak coast.
 }
 \examples{
+\dontrun{
 # Create example point using the required CRS WGS84 UTM32N (EPSG: 32632)
 target_point <- sf::st_sfc(sf::st_point(c(538310, 6544255)), crs = 32632)
 
 # Date target point, manually specifying the elevation instead of providing
-# an elevation raster and setting the resolution on the calendar scale to
-# 200 years and elevation scale to 1 for speed.
-shoreline_date(sites = target_point,
-               elevation = 80,
-               elev_reso = 1,
-               cal_reso = 400)
+# an elevation raster.
+shoreline_date(sites = target_point, elevation = 80)
+}
 }

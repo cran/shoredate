@@ -9,7 +9,7 @@
 #'  is interpolated.
 #' @param isobases 4 spatial lines representing the shoreline isobases of the
 #'  existing displacement curves. Multiple sets of 4 isobases with different
-#'  isobase dirctions can be provided (see [create_isobases()]).
+#'  isobase directions can be provided (see [create_isobases()]).
 #' @param power A numerical value indicating the inverse distance power for IDW.
 #'  Defaults to 2.
 #' @param cal_reso Numeric value specifying the resolution to use on the
@@ -34,10 +34,10 @@
 #' # WGS84 / zone UTM32N (EPSG: 32632)
 #' target_point <- sf::st_sfc(sf::st_point(c(579570, 6582982)), crs = 32632)
 #'
-#' # Interpolate shoreline displacement curve to the target point location
-#' # setting the resolution on the calendar scale to 1000 years for speed.
+#' # Interpolate shoreline displacement curve to the target point location,
+#' # setting the resolution on the calendar scale to 2000 years for speed.
 #' target_curve <- interpolate_curve(target_point, cal_reso = 2000)
-#'
+#
 interpolate_curve <- function(target,
                               isobases = NA,
                               power = 2,

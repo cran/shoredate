@@ -4,10 +4,10 @@
 #'  shoreline dates.
 #'
 #' @param shoreline_dates Object of class `shoreline_date`.
-#' @param cut_off Calender year specifying where dates should be cut off.
+#' @param cut_off Calendar year specifying where dates should be cut off.
 #'  Defaults to 2500 BCE.
 #' @param cut_off_level Numerical value between 0 and 1 indicating the
-#'  probability mass that has to faller after the cut-off for a date to be
+#'  probability mass that has to fall after the cut-off for a date to be
 #'  excluded. Defaults to 1, retaining all dates.
 #' @param normalise Logical value indicating whether the probability sum of the
 #'  dates should be normalised to sum to unity. Defaults to TRUE.
@@ -45,8 +45,8 @@ sum_shoredates <- function(shoreline_dates, cut_off = -2500,
   within_date_range <- function(x){
     x$cumulative_prob <-  cumsum(x[,"probability"])
 
-  # Failed R-CMD check with macos-latest when threshold was 1. Trying skipping
-  # check if the value is 1.
+  # Failed R-CMD check with macos-latest when threshold was 1. Hardcoding TRUE
+  # if the value is 1.
   if(cut_off_level == 1){
     TRUE
   } else {
@@ -94,6 +94,10 @@ sum_shoredates <- function(shoreline_dates, cut_off = -2500,
       dates_dfs <- lapply(shoreline_dates, as.data.frame)
     }
 
+    # Remove dates that are NA
+    dates_dfs <- dates_dfs[!(sapply(dates_dfs, function(x)
+      all(is.na(x["probability"]))))]
+
     # Exclude dates that fall after the cut-off
     dates_dfs <- dates_dfs[which(sapply(dates_dfs, within_date_range))]
 
@@ -104,7 +108,7 @@ sum_shoredates <- function(shoreline_dates, cut_off = -2500,
 
     # Sum probability by year
     sdates <-  aggregate(sdates$probability,
-                         by = list(bce = sdates$bce), FUN = sum)
+                         by = list(bce = sdates$bce), FUN = sum, na.rm = TRUE)
 
   # If the dates are not sparse
   } else {
@@ -122,20 +126,25 @@ sum_shoredates <- function(shoreline_dates, cut_off = -2500,
       dates_dfs <- sapply(dates_list, function(x) x["date"])
     }
 
+    # Remove dates were all probability is NA
+    dates_dfs <- dates_dfs[!(sapply(dates_dfs, function(x)
+                                               all(is.na(x["probability"]))))]
+
     # Select dates that fall before cut-off
     dates_dfs <- dates_dfs[which(sapply(dates_dfs, within_date_range))]
+
 
     ndates <- length(dates_dfs)
 
     # Collapse the retrieved data frames
     sdates <- do.call(rbind, dates_dfs)
     sdates <-  aggregate(sdates$probability,
-                         by = list(bce = sdates$bce), FUN = sum)
+                         by = list(bce = sdates$bce), FUN = sum, na.rm = TRUE)
   }
 
   # Normalise sum of dates to sum to unity
   if (normalise) {
-    sdates$probability <- sdates$x/sum(sdates$x)
+    sdates$probability <- sdates$x/sum(sdates$x, na.rm = TRUE)
     sdates <- sdates[, c("bce", "probability")]
 
   # If not, only rename columns

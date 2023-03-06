@@ -19,8 +19,8 @@ informed displacement curves that should be plotted. Accepted values are
 \code{c("Horten", "Porsgrunn", "Tvedestrand", "Arendal")}. All are included by
 default.}
 
-\item{greyscale}{Logical value indicating whether the plot should include
-colours or not. Defaults to FALSE.}
+\item{greyscale}{Logical value indicating whether the plot should be in
+greyscale or not. Defaults to FALSE.}
 }
 \value{
 A plot displaying the underlying shoreline displacement curves and,
@@ -31,7 +31,8 @@ Function for plotting shoreline displacement curves. Calling to plot without
 providing interpolated curves will display the four underlying curves.
 }
 \examples{
-# Empty plot for speed of the example
-displacement_plot(displacement_curves = "")
-
+\dontrun{
+# Plot the geologically derived displacement curves
+displacement_plot()
+}
 }
