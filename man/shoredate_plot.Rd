@@ -20,8 +20,9 @@ shoredate_plot(
 \arguments{
 \item{shorelinedates}{Object of class \code{shoreline_date}.}
 
-\item{elevation_distribution}{Logical value indicating whether the gamma
-distribution should be displayed. Default is TRUE.}
+\item{elevation_distribution}{Logical value indicating whether the
+distribution describing the distance between site and shoreline should be
+displayed. Default is TRUE.}
 
 \item{displacement_curve}{Logical value indicating whether the displacement
 curve should be displayed. Default is TRUE.}
@@ -30,7 +31,7 @@ curve should be displayed. Default is TRUE.}
 be printed. Defaults to FALSE.}
 
 \item{parameters}{Logical value indicating whether the parameters of the
-gamma distribution should be printed. Default is FALSE.}
+statistical function should be displayed. Default is FALSE.}
 
 \item{isobase_direction}{Logical value indicating whether the direction of
 the isobases should be printed. Default is FALSE.}
@@ -69,7 +70,7 @@ values denote CE.
 # Create example point with correct coordinate reference system
 target_point <- sf::st_sfc(sf::st_point(c(538310, 6544255)), crs = 32632)
 
-# Reduce date resolution with cal_reso and elevation_reso for speed.
+# Reduce date resolution with cal_reso and elevation_reso for speed
 target_date <- shoreline_date(sites = target_point, elevation = 80,
                               elev_reso = 10,
                               cal_reso = 500)

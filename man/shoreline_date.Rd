@@ -11,6 +11,7 @@ shoreline_date(
   cal_reso = 10,
   isobase_direction = 327,
   sum_isobase_directions = FALSE,
+  model = "gamma",
   model_parameters = c(0.286, 20.833),
   elev_fun = "mean",
   interpolated_curve = NA,
@@ -31,7 +32,7 @@ an elevation raster of class \code{SpatRaster} from the package
 \code{terra} from where the elevation values are to be derived.}
 
 \item{elev_reso}{Numeric value specifying the resolution with which to step
-through the gamma distribution representing the distance between site and
+through the distribution representing the distance between site and
 shoreline. Defaults to 0.01m.}
 
 \item{cal_reso}{Numeric value specifying the resolution to use on the
@@ -44,9 +45,14 @@ of the isobases. Defaults to 327.}
 isobase directions are specified in \code{isobase_direction} the results should
 be summed for each site using \code{sum_shoredates}. Defaults to FALSE.}
 
-\item{model_parameters}{Vector of two numeric values specifying the shape and
-scale of the gamma distribution. Defaults to c(0.286, 20.833), denoting
-the shape and scale, respectively.}
+\item{model}{Character vector specifying the statistical model with which to
+model the distance from site to shoreline. Currently accepts either "none"
+or "gamma". Defaults to "gamma".}
+
+\item{model_parameters}{Vector of numeric values specifying the parameters
+for the statistical model describing the distance between site and
+shoreline. Defaults to c(0.286, 20.833), denoting the shape and scale of the
+default gamma function, respectively.}
 
 \item{elev_fun}{Statistic to define site elevation if this is to be derived
 from an elevation raster. Uses \code{terra::extract()}. Defaults to mean.}
@@ -80,6 +86,7 @@ direction. The elements of each date is:
 \item \code{date} data frame with the columns \code{bce} where negative values
 indicate years BCE and positive CE, as well as \code{probability}, which gives
 the probability mass for each year.
+\item \code{weighted_mean} the weighted mean date.
 \item \code{hdr_start} start values for the HDR ranges.
 \item \code{hdr_end} end values for the HDR ranges.
 \item \code{hdr_prob} probability level for the HDR.
@@ -88,10 +95,8 @@ the site. This has the columns \code{bce}, giving years BCE/CE. \code{lowerelev}
 the lower limit for the elevation of the shoreline for each year.
 \code{upperelev}, the upper limit for elevation of the shoreline for each year.
 \item \code{dispcurve_direction} direction of the isobases in use.
-\item \code{model_parameters} parameters for the gamma distribution. The
-first value gives the shape and the second value the scale of the
-distribution.
-\item \code{gammdat} data frame holding the gamma distribution. The column
+\item \code{model_parameters} parameters for the statistical model.
+\item \code{modeldat} data frame holding the model distribution. The column
 \code{offset} denotes the vertical distance (m) from the shoreline, as specified
 by the \code{elev_reso} argument. \code{px} is the cumulative probability at each step
 of \code{offset}, and \code{probs} is the probability of each step found by
@@ -103,14 +108,23 @@ subtracting the preceding value from each value of \code{px}.
 A function for shoreline dating Stone Age sites based on their present-day
 elevation, their likely elevation above sea-level when in use and the
 trajectory of past shoreline displacement on the Norwegian Skagerrak coast.
+Details and caveats pertaining to the implemented method is given in
+Roalkvam (2023).
 }
 \examples{
-\dontrun{
 # Create example point using the required CRS WGS84 UTM32N (EPSG: 32632)
 target_point <- sf::st_sfc(sf::st_point(c(538310, 6544255)), crs = 32632)
 
 # Date target point, manually specifying the elevation instead of providing
-# an elevation raster.
-shoreline_date(sites = target_point, elevation = 80)
+# an elevation raster. Reducing elev_reso and cal_reso for speed.
+shoreline_date(sites = target_point,
+               elevation = 80,
+               elev_reso = 1,
+               cal_reso = 400)
 }
+\references{
+Roalkvam, I. 2023. A simulation-based assessment of the relation between
+Stone Age sites and relative sea-level change along the Norwegian Skagerrak
+coast. \emph{Quaternary Science Reviews} 299:107880. DOI:
+https://doi.org/10.1016/j.quascirev.2022.107880
 }

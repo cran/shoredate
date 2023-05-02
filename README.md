@@ -71,7 +71,7 @@ figure, which also indicates the temporal coverage of the package.
 Note that spatial data used with the package should be set to WGS 84 /
 UTM zone 32N (EPSG:32632).
 
-<img src="man/figures/coverage.png" width="100%" style="display: block; margin: auto;" />
+<img src="man/figures/coverage.png" width="90%" height="90%" style="display: block; margin: auto;" />
 
 As human occupation in the region only occurred some time after the
 retreat of the Fennoscandian Ice Sheet, the currently oldest known sites
@@ -103,7 +103,7 @@ displacement curves available from within the study area. Each of these
 is associated with a shoreline isobase, along which the trajectory of
 relative sea-level change has been the same. To find the local
 displacement curve, the curves are interpolated to a site location using
-inverse distance weighting, where the default is to weight the
+inverse distance weighting, where the default is to weigh the
 interpolation by the square of the inverse distance between site and
 isobases.
 
