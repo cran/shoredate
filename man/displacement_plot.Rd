@@ -5,30 +5,63 @@
 \title{Plot shoreline displacement curves}
 \usage{
 displacement_plot(
-  interpolated_curve = NA,
+  target_curve = NA,
   displacement_curves = c("Horten", "Porsgrunn", "Tvedestrand", "Arendal"),
+  target_name = "Target curve",
+  target_line = "solid",
+  target_col = "red",
+  target_alpha = 1,
+  displacement_line = c(Horten = "solid", Porsgrunn = "solid", Tvedestrand = "solid",
+    Arendal = "solid"),
+  displacement_col = c(Horten = "darkorange", Porsgrunn = "darkgreen", Tvedestrand =
+    "blue", Arendal = "black"),
+  displacement_alpha = 1,
   greyscale = FALSE
 )
 }
 \arguments{
-\item{interpolated_curve}{List holding one or more interpolated shoreline
-displacement curves.}
+\item{target_curve}{Data frame holding a shoreline displacement curve.}
 
 \item{displacement_curves}{Character vector specifying which geologically
-informed displacement curves that should be plotted. Accepted values are
+informed displacement curves should be plotted. Accepted values are
 \code{c("Horten", "Porsgrunn", "Tvedestrand", "Arendal")}. All are included by
 default.}
 
+\item{target_name}{Character value specifying the name that is given to the
+target curve, if provided. Defaults to \code{"Target curve"}.}
+
+\item{target_line}{Character value specifying the line type that is used for
+the target curve, if this is provided. Defaults to \code{"solid"}.}
+
+\item{target_col}{Character value specifying the colour that is used for the
+target curve, if this is provided. Defaults to \code{"red"}.}
+
+\item{target_alpha}{Numerical value specifying the alpha value that is used
+for the target curve, if this is provided. Defaults to \code{1}.}
+
+\item{displacement_line}{Character vector specifying the line types that are
+used for the geological displacement curves to be plotted. Defaults to
+\code{c("Horten" = "solid", "Porsgrunn" = "solid", "Tvedestrand" = "solid", "Arendal" = "solid")}.}
+
+\item{displacement_col}{Character vector specifying the colours that are
+used for the geological displacement curves to be plotted. Defaults to
+\code{c("Horten" = "darkorange", "Porsgrunn" = "darkgreen", "Tvedestrand" = "blue", "Arendal" = "black")}.}
+
+\item{displacement_alpha}{Numerical value specifying the alpha value that are
+used for all of the geological displacement curves to be plotted. Defaults
+to 1.}
+
 \item{greyscale}{Logical value indicating whether the plot should be in
-greyscale or not. Defaults to FALSE.}
+greyscale or not. Defaults to \code{FALSE}.}
 }
 \value{
 A plot displaying the underlying shoreline displacement curves and,
-if provided, an interpolated curve.
+if provided, a target curve.
 }
 \description{
 Function for plotting shoreline displacement curves. Calling to plot without
-providing interpolated curves will display the four underlying curves.
+providing a target curve will display the four underlying geologically
+derived displacement curves.
 }
 \examples{
 # Empty plot for speed

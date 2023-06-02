@@ -2,7 +2,8 @@
 % Please edit documentation in R/interpolate_curve.R
 \name{interpolate_curve}
 \alias{interpolate_curve}
-\title{Interpolate displacement curve using IDW}
+\title{Interpolate displacement curve to a target location within the spatial
+coverage in south-eastern Norway}
 \usage{
 interpolate_curve(
   target,
@@ -19,30 +20,31 @@ is interpolated.}
 \item{isobases}{4 spatial lines representing the shoreline isobases of the
 existing displacement curves. Multiple sets of 4 isobases with different
 isobase directions can be provided (see \code{\link[=create_isobases]{create_isobases()}}). Defaults to
-isobases with a direction of 327.}
+isobases with a direction of \code{327}.}
 
 \item{power}{A numerical value indicating the inverse distance power for IDW.
-Defaults to 2.}
+Defaults to \code{2}.}
 
-\item{cal_reso}{Numeric value specifying the resolution to use on the
-calendar scale. Defaults to 10.}
+\item{cal_reso}{A numerical value specifying the resolution to use on the
+calendar scale. Defaults to \code{10}.}
 
 \item{verbose}{Logical value indicating whether progress should be printed to
-console. Defaults to FALSE.}
+console. Defaults to \code{FALSE}.}
 }
 \value{
-A list holding an interpolated displacement curve for each isobase
-direction. Each displacement curve is represented by a data frame with
-the columns \code{bce} where negative values indicate years BCE and positive CE,
-\code{lowerelev}, representing the lower limit for the elevation of the shoreline
-for each year. \code{upperelev}, the upper limit for elevation of the shoreline
-for each year, and \code{direction} which indicates the direction of the isobases
-used when interpolating the curve.
+Returns a list holding an interpolated displacement curve for each
+isobase direction. Each displacement curve is represented by a data frame
+with the columns \code{bce} where negative values indicate years BCE and positive
+CE, \code{lowerelev}, representing the lower limit for the elevation of the
+shoreline for each year. \code{upperelev}, the upper limit for elevation of the
+shoreline for each year, and \code{direction} which indicates the direction of
+the isobases used when interpolating the curve.
 }
 \description{
-Interpolate the trajectory of past shoreline displacement to a single
-location based on the distance of the location to the shoreline isobases of
-the geologically derived displacement curves. This is done using inverse
+Interpolate the trajectory of past shoreline displacement to a target
+location within the spatial coverage on the Skagerrak coast of south-eastern
+Norway. This based on the distance of the location to the shoreline isobases
+of the geologically derived displacement curves and is done using inverse
 distance weighting.
 }
 \examples{

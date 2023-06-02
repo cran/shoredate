@@ -5,12 +5,10 @@
 #'
 #' @param shoredates_sum Object of class `shoredates_sum`.
 #' @param sample_size Logical indicating whether or not to display the number of
-#'  summed dates on the plot. Defaults to TRUE.
+#'  summed dates on the plot. Defaults to `TRUE`.
 #'
 #' @return A line plot showing the provided summed probability distribution.
 #' @export
-#'
-#' @import ggplot2
 #'
 #' @examples
 #' # Create example points

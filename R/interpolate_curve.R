@@ -1,8 +1,10 @@
-#' Interpolate displacement curve using IDW
+#' Interpolate displacement curve to a target location within the spatial
+#'  coverage in south-eastern Norway
 #'
-#' Interpolate the trajectory of past shoreline displacement to a single
-#'  location based on the distance of the location to the shoreline isobases of
-#'  the geologically derived displacement curves. This is done using inverse
+#' Interpolate the trajectory of past shoreline displacement to a target
+#'  location within the spatial coverage on the Skagerrak coast of south-eastern
+#'  Norway. This based on the distance of the location to the shoreline isobases
+#'  of the geologically derived displacement curves and is done using inverse
 #'  distance weighting.
 #'
 #' @param target A spatial target location to where the new displacement curve
@@ -10,25 +12,23 @@
 #' @param isobases 4 spatial lines representing the shoreline isobases of the
 #'  existing displacement curves. Multiple sets of 4 isobases with different
 #'  isobase directions can be provided (see [create_isobases()]). Defaults to
-#'  isobases with a direction of 327.
+#'  isobases with a direction of `327`.
 #' @param power A numerical value indicating the inverse distance power for IDW.
-#'  Defaults to 2.
-#' @param cal_reso Numeric value specifying the resolution to use on the
-#'  calendar scale. Defaults to 10.
+#'  Defaults to `2`.
+#' @param cal_reso A numerical value specifying the resolution to use on the
+#'  calendar scale. Defaults to `10`.
 #' @param verbose Logical value indicating whether progress should be printed to
-#'  console. Defaults to FALSE.
+#'  console. Defaults to `FALSE`.
 #'
-#' @return A list holding an interpolated displacement curve for each isobase
-#'  direction. Each displacement curve is represented by a data frame with
-#'  the columns `bce` where negative values indicate years BCE and positive CE,
-#'  `lowerelev`, representing the lower limit for the elevation of the shoreline
-#'  for each year. `upperelev`, the upper limit for elevation of the shoreline
-#'  for each year, and `direction` which indicates the direction of the isobases
-#'  used when interpolating the curve.
+#' @return Returns a list holding an interpolated displacement curve for each
+#'  isobase direction. Each displacement curve is represented by a data frame
+#'  with the columns `bce` where negative values indicate years BCE and positive
+#'  CE, `lowerelev`, representing the lower limit for the elevation of the
+#'  shoreline for each year. `upperelev`, the upper limit for elevation of the
+#'  shoreline for each year, and `direction` which indicates the direction of
+#'  the isobases used when interpolating the curve.
 #'
 #' @export
-#'
-#' @import sf
 #'
 #' @examples
 #' # Create example point using the required coordinate system
@@ -45,9 +45,25 @@ interpolate_curve <- function(target,
                               cal_reso = 10,
                               verbose = FALSE){
 
+  # Load the spatial limit in south-eastern Norway
+  spatial_limit <- sf::st_read(system.file("extdata/spatial_limit.gpkg",
+                                           package = "shoredate"), quiet = TRUE)
+
   # Check that the target location is set to correct CRS (causes error if it
   # is not) and is located within the study area (prints warning if it is not)
-  check_target_location(target)
+  if (is.na(sf::st_crs(target))) {
+    stop("Undefined coordinate reference system. This needs to be set to WGS84 / UTM zone 32N (EPSG: 32632).")
+  }
+
+  if (sf::st_crs(target)$epsg != 32632) {
+    stop(paste0("Target has coordinate reference system with EPSG ",
+                sf::st_crs(target)$epsg,
+                ". This needs to be set to WGS84 / UTM zone 32N (EPSG: 32632)."))
+  }
+
+  if (!(sf::st_intersects(target, spatial_limit, sparse = FALSE))) {
+    warning(paste("Target location is not within the study area for which the interpolation method was derived."))
+  }
 
   # Load existing displacement curves
   displacement_curves <- get(load(system.file("extdata/displacement_curves.rda",
@@ -65,7 +81,11 @@ interpolate_curve <- function(target,
                   mustWork = TRUE), quiet = TRUE)
   }
 
-  interpolated_curves <- list()
+  # If multiple displacement curves are to be returned due to multiple
+  # isobase directions, set up a list to be returned
+  if(length(unique(isobases$direction)) > 1){
+    interpolated_curve <- list()
+  }
 
   for(i in 1:length(unique(isobases$direction))){
     isobases_dir <- isobases[isobases$direction ==
@@ -134,9 +154,15 @@ interpolate_curve <- function(target,
     if (verbose) {
       close(pb)
     }
+
     values$direction <- unique(isobases$direction)[i]
-    interpolated_curves[[i]] <- values
+    if (length(unique(isobases$direction)) > 1) {
+      interpolated_curve[[i]] <- values
+    } else {
+      interpolated_curve <- values
+    }
+
   }
 
-  interpolated_curves
+  interpolated_curve
 }

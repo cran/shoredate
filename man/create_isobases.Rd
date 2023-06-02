@@ -2,22 +2,24 @@
 % Please edit documentation in R/create_isobases.R
 \name{create_isobases}
 \alias{create_isobases}
-\title{Create isobases}
+\title{Create isobases with different directions within the spatial coverage in
+south-eastern Norway}
 \usage{
 create_isobases(isobase_direction)
 }
 \arguments{
-\item{isobase_direction}{A vector holding a single or multiple directions for
-the isobases.}
+\item{isobase_direction}{A numerical vector holding a single or multiple
+directions for the isobases.}
 }
 \value{
 A simple feature holding the isobases represented as lines.
 }
 \description{
-Function to create isobases for interpolating shoreline displacement curves.
-This is done from the centre points of the supplied displacement curves.
-Isobases can also be created for multiple directions, which is useful for
-testing the sensitivity of dates to the direction of the isobases.
+Function to create isobases for interpolating shoreline displacement curves
+within the spatial coverage in south-eastern Norway. This is done from the
+centre points of the supplied displacement curves. Isobases can also be
+created for multiple directions, which is useful for testing the sensitivity
+of dates to the direction of the isobases.
 }
 \examples{
 # Create isobases in a specified direction

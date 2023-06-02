@@ -57,12 +57,27 @@
 # precomputing interpolation and passing site as a site name
 
     Code
-      shoreline_date(site = "Example site", elevation = 60, interpolated_curve = target_curve)
+      shoreline_date(site = "Example site", elevation = 60, target_curve = precompiled_curve)
     Output
       ===============
-      Site:  1
+      Site:  Example site
       Elevation:  60 
       
       95% HDR:
       7010 BCE-4880 BCE
+
+# passing displacement curve with different time interval and no isobase
+
+    Code
+      shoreline_date(site = "Example site", elevation = 17, target_curve = orland_disp)
+    Output
+      ===============
+      Site:  Example site
+      Elevation:  17 
+      
+      Isobase direction:  NA 
+      
+      95% HDR:
+      2900 BCE-210 CE
+      230 CE-230 CE
 
