@@ -6,7 +6,7 @@ output:
     number_sections: true
     toc: true
 vignette: >
-  %\VignetteIndexEntry{extending-shoredate}
+  %\VignetteIndexEntry{Applying shoredate to other regions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,7 +18,7 @@ vignette: >
 
 While *shoredate* and the method underlying it has been developed for application in a constrained region of south-eastern Norway, it is possible to apply it to other areas. The following presents an example from Ørland in Trøndelag, Central Norway, for which a new displacement curve for the later parts of the Holocene has recently been published (Romundset and Lakeman 2019). Furthermore, all that is needed to use the main functions of the package is a shoreline displacement curve that describes the sea-level change at the location of a site to be dated, and an elevation value for that site. Consequently, it is in principle possible to extend the main functionality of the package to any region of the world in which the method is applicable, provided reliable data in a suitable format is available.
 
-Some caveats and notes of caution should be added here. First of all the method will at present only work in regions which have experienced a monotonic non-increasing relative sea-level change. That is, regions with a continuous development of regressing or stable sea-levels. Furthermore, as the package was originally developed to be applied along the Skaggerrak coast of south-eastern Norway, not all of its functionality is applicable elsewhere. The function `interpolate_curve()` involves an increasing degree of uncertain extrapolation the further away from the spatial limit in south-eastern Norway one moves, and both `interpolate_curve()` and `create_isobases()` will fail with other coordinate reference systems than WGS 82 / UTM zone 32N (EPSG:32632).
+Some caveats and notes of caution should be added here. First of all the method will at present only work in regions which have experienced a monotonic non-increasing relative sea-level change. That is, regions with a continuous development of regressing or stable sea-levels. Furthermore, as the package was originally developed to be applied along the Skaggerrak coast of south-eastern Norway, not all of its functionality is applicable elsewhere. The function `interpolate_curve()` involves an increasing degree of uncertain extrapolation the further away from the spatial limit in south-eastern Norway one moves, and both `interpolate_curve()` and `create_isobases()` will fail with other coordinate reference systems than WGS 84 / UTM zone 32N (EPSG:32632).
 
 Finally, the default method used for shoreline dating in the package is based on an empirically derived estimation of the relationship between coastal Stone Age sites and the contemporaneous shoreline in the Skagerrak region of south-eastern Norway. Consequently, the extent to which the same relationship characterises the site-sea relationship in other areas of Norway, and beyond, is therefore undetermined (a possible approach for assessing this relationship in other areas can be found in Roalkvam 2023). However, in regions characterised by a monotonically decreasing relative sea-level it can reasonably be assumed that the point in time when a location emerged from the sea defines the earliest possible date for when it could have been occupied. Consequently, another option is to use the method to find a *terminus post quem* date, as outlined in the main vignette, and further demonstrated below.
 
@@ -43,19 +43,23 @@ library(shoredate)
 # Load the displacement curve for Ørland
 orland_disp <- get(load(system.file("extdata/orland_displacement_curve.rda",
                   package = "shoredate")))
+```
 
+```
+## Warning in readChar(con, 5L, useBytes = TRUE): cannot open compressed file '', probable reason 'No such file or directory'
+```
+
+```
+## Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection
+```
+
+```r
 # Print the last few rows of the Ørland displacement curve
 tail(orland_disp)
 ```
 
 ```
-##        bce upperelev lowerelev   name
-## 5996 -4045  21.02450  20.55970 Ørland
-## 5997 -4046  21.02702  20.56243 Ørland
-## 5998 -4047  21.02954  20.56516 Ørland
-## 5999 -4048  21.03206  20.56789 Ørland
-## 6000 -4049  21.03458  20.57062 Ørland
-## 6001 -4050  21.03710  20.57336 Ørland
+## Error in eval(expr, envir, enclos): object 'orland_disp' not found
 ```
 
 This can then be plotted with `displacement_plot()`. The name is here adjusted with the argument `target_name` to something more informative, and the geologically derived displacement curves from south-eastern Norway are excluded by specifying the `displacement_curves` argument, as these are not of relevance here.
@@ -67,7 +71,9 @@ displacement_plot(target_curve = orland_disp,
                   displacement_curves = NA)
 ```
 
-<img src="extend-orland-disp-1.png" alt="plot of chunk orland-disp" style="display: block; margin: auto;" />
+```
+## Error in displacement_plot(target_curve = orland_disp, target_name = "Displacement curve for Ørland, Central Norway", : unused arguments (target_curve = orland_disp, target_name = "Displacement curve for Ørland, Central Norway")
+```
 
 A note should be made that the Ørland curve was originally published with reference to the highest astronomical tide in the region (see Romundset and Lakeman 2019:66). To adjust this to mean sea-level, the difference in elevation between the highest astronomical tide and the mean sea-level has been been subtracted from the elevation values.
 
@@ -121,6 +127,10 @@ overview_map <- target_plot(targets = orland,
                       target_labels =  FALSE)
 ```
 
+```
+## Error in target_plot(targets = orland, naturalearth_basemap = TRUE, naturalearth_zoom = c(1e+06, : unused arguments (naturalearth_basemap = TRUE, naturalearth_zoom = c(1e+06, 1e+06), crs_epsg = 32632, base_col = "black", base_fill = "grey85", target_labels = FALSE)
+```
+
 Having created a base plot, this can now be manipulated using other functions from the package `ggplot2`.
 
 
@@ -142,6 +152,10 @@ overview_map <- overview_map +
                        "spatial limit in south-eastern Norway"))
 ```
 
+```
+## Error in eval(expr, envir, enclos): object 'overview_map' not found
+```
+
 When the map displaying the location of Ørland is created, we can create a second map that shows the location of the example points, zoomed in at Ørland, which is located at the tip of the Fosen peninsula. While the map is fairly simple, it can nonetheless be useful to perform this exercise to make sure everything looks as it should.
 
 
@@ -153,7 +167,13 @@ examples_map <- target_plot(targets = target_points,
                       base_col = "black",
                       base_fill = "grey85",
                       isobases = NA)
+```
 
+```
+## Error in target_plot(targets = target_points, naturalearth_basemap = TRUE, : unused arguments (naturalearth_basemap = TRUE, naturalearth_zoom = c(15000, 10000), base_col = "black", base_fill = "grey85")
+```
+
+```r
 # Add axis labels and ticks, which are not returned with target_plot()
 examples_map <- examples_map +
       theme(
@@ -162,19 +182,29 @@ examples_map <- examples_map +
         axis.ticks = element_line()) +
       coord_sf(datum = st_crs(target_points), expand = FALSE) +
       ggtitle("Location of example points in Ørland")
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'examples_map' not found
+```
+
+```r
 # Call overview map
 overview_map
 ```
 
-<img src="extend-maps-1.png" alt="plot of chunk maps" style="display: block; margin: auto;" />
+```
+## Error in eval(expr, envir, enclos): object 'overview_map' not found
+```
 
 ```r
 # Call map displaying the location of the example points
 examples_map
 ```
 
-<img src="extend-maps-2.png" alt="plot of chunk maps" style="display: block; margin: auto;" />
+```
+## Error in eval(expr, envir, enclos): object 'examples_map' not found
+```
 
 ## Dating example sites in Ørland
 
@@ -194,7 +224,10 @@ plot(target_points, col = "black", add = TRUE)
 text(st_coordinates(target_points) - 50, labels = target_points$name)
 ```
 
-<img src="extend-examples-plot-1.png" alt="plot of chunk examples-plot" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+<img src="extend-examples-plot-1.png" alt="plot of chunk examples-plot"  />
+<p class="caption">plot of chunk examples-plot</p>
+</div>
 
 After the raster has been loaded we can find the elevation of the sites:
 
@@ -203,7 +236,7 @@ terra::extract(elev_raster, terra::vect(target_points))[, -1]
 ```
 
 ```
-## [1] 17.74339 19.53946
+## [1] 17.74340 19.53946
 ```
 
 This elevation is retrieved by `shoreline_date()` if the raster is passed to its `elevation` argument and the sites to be dated are provided as spatial geometries. However, to illustrate the point that all that is needed to use `shoreline_date()` is a displacement curve and knowledge of these elevations, the function is here called by only providing the displacement curve and providing a character vector with the name of the sites and a numerical vector with their elevations:
@@ -213,12 +246,21 @@ This elevation is retrieved by `shoreline_date()` if the raster is passed to its
 target_dates <- shoreline_date(sites = c("Example 1", "Example 2"),
                                target_curve = orland_disp,
                                elevation = c(17.7, 19.5))
+```
 
+```
+## Error in shoreline_date(sites = c("Example 1", "Example 2"), target_curve = orland_disp, : unused argument (target_curve = orland_disp)
+```
+
+```r
 # Plot the results
 shoredate_plot(target_dates, multiplot = TRUE)
 ```
 
-<img src="extend-orland-dateplot-1.png" alt="plot of chunk orland-dateplot" style="display: block; margin: auto;" />
+<div class="figure" style="text-align: center">
+<img src="extend-orland-dateplot-1.png" alt="plot of chunk orland-dateplot"  />
+<p class="caption">plot of chunk orland-dateplot</p>
+</div>
 
 ## Finding the earliest possible date
 
@@ -236,13 +278,22 @@ Furthermore, it could also be possible to reverse this logic in regions that hav
 earliest_date <- shoreline_date(target_points[1,],
                                 target_curve = orland_disp,
                                 elevation = elev_raster,
-                                model = "none")
+                                model = "none",
+                                hdr_prob = 1)
+```
 
+```
+## Error in shoreline_date(target_points[1, ], target_curve = orland_disp, : unused argument (target_curve = orland_disp)
+```
+
+```r
 # Call to plot
 shoredate_plot(earliest_date, site_name = TRUE)
 ```
 
-<img src="extend-earliest-1.png" alt="plot of chunk earliest" style="display: block; margin: auto;" />
+```
+## Error in eval(expr, envir, enclos): object 'earliest_date' not found
+```
 
 # References
 
